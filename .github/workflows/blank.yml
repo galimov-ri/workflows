@@ -1,76 +1,12 @@
-name: Create Daily Routine Issues
-
-on:
-  schedule:
-    # Запуск в 9:00 UTC каждый будний день (пн-пт)
-    # Для Москвы (UTC+3) нужно указать 6:00 UTC
-    - cron: '0 6 * * 1-5'
-  # Для ручного запуска
-  workflow_dispatch:
-
+name: Test Issue Creation
+on: workflow_dispatch
 jobs:
-  create_issues:
+  test:
     runs-on: ubuntu-latest
     permissions:
       issues: write
     steps:
-      - name: Create daily issues
-        run: |
-          # Получаем сегодняшнюю дату для заголовка
-          TODAY=$(date +'%Y-%m-%d')
-          
-          # Создаём задачу "Работа"
-          gh issue create \
-            --title "Работа ($TODAY)" \
-            --label "daily-task" \
-            --body "### Задачи на сегодня
-          - [ ] Задача 1
-          - [ ] Задача 2
-          
-          ---
-          **Время:** 9:00 - 13:00
-          
-          ---
-          **Статус:** ⬜ Не начата"
-          
-          # Создаём задачу "Планирование"
-          gh issue create \
-            --title "Планирование ($TODAY)" \
-            --label "daily-task" \
-            --body "### План на день
-          - [ ] Что сделано за первую половину дня?
-          - [ ] Какие планы на вторую половину?
-          
-          ---
-          **Время:** 14:45 - 15:00
-          
-          ---
-          **Статус:** ⬜ Не начата"
-          
-          # Создаём задачу "Учёба"
-          gh issue create \
-            --title "Учёба ($TODAY)" \
-            --label "daily-task" \
-            --body "### Что учим?
-          - [ ] Тема 1
-          - [ ] Тема 2
-          
-          ---
-          **Время:** 15:00 - 16:30
-          
-          ---
-          **Статус:** ⬜ Не начата"
-          
-          # Создаём задачу "Игры"
-          gh issue create \
-            --title "Игры ($TODAY)" \
-            --label "daily-task" \
-            --body "### Во что играем?
-          
-          ---
-          **Время:** 16:30 - 18:00
-          
-          ---
-          **Статус:** ⬜ Не начата"
+      - run: |
+          gh issue create --title "Test $(date)" --body "Hello"
         env:
           GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
