@@ -1,11 +1,24 @@
-name: Test Issue Creation
-on: workflow_dispatch
+name: Create Daily Routine Issues
+
+on:
+  schedule:
+    - cron: '0 6 * * 1-5'    # 6:00 UTC = 9:00 MSK, пн-пт
+  workflow_dispatch:
+
 jobs:
-  test:
+  create_issues:
     runs-on: ubuntu-latest
     permissions:
       issues: write
     steps:
-      - run: gh issue create --title "Test $(date)" --body "Hello"
+      - name: Checkout repository
+        uses: actions/checkout@v4   # <-- КЛЮЧЕВОЙ ШАГ
+      - name: Create daily issues
+        run: |
+          TODAY=$(date +'%Y-%m-%d')
+          gh issue create --title "Работа $TODAY" --body "9:00-13:00" --label daily-task
+          gh issue create --title "Планирование $TODAY" --body "14:45-15:00" --label daily-task
+          gh issue create --title "Учёба $TODAY" --body "15:00-16:30" --label daily-task
+          gh issue create --title "Игры $TODAY" --body "16:30-18:00" --label daily-task
         env:
           GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
