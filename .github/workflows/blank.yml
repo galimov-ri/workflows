@@ -12,7 +12,16 @@ jobs:
       issues: write
     steps:
       - name: Checkout repository
-        uses: actions/checkout@v4   # <-- КЛЮЧЕВОЙ ШАГ
+        uses: actions/checkout@v4
+
+      - name: Ensure label 'daily-task' exists
+        run: |
+          if ! gh label list --json name --jq '.[] | select(.name == "daily-task")' | grep -q .; then
+            gh label create daily-task --description "Ежедневные задачи" --color 0075ca
+          fi
+        env:
+          GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+
       - name: Create daily issues
         run: |
           TODAY=$(date +'%Y-%m-%d')
