@@ -19,7 +19,7 @@ jobs:
           export TZ="Asia/Vladivostok"
           
           # Получаем дату следующего дня (завтра) во владивостокском времени
-          TOMORROW=$(date -d "+1 day" +'%Y-%m-%d')
+          TOMORROW=$(date -d "@$(($(date +%s) + 86400))" +'%Y-%m-%d')
           
           echo "Создаю задачи на: $TOMORROW"
 
