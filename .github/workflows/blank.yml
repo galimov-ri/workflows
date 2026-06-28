@@ -2,7 +2,7 @@ name: Create Daily Routine Issues
 
 on:
   schedule:
-    - cron: '0 6 * * 1-5'    # 6:00 UTC = 9:00 MSK, пн-пт
+    - cron: '0 3 * * *'
   workflow_dispatch:
 
 jobs:
@@ -11,90 +11,40 @@ jobs:
     permissions:
       issues: write
     steps:
-      - name: Checkout repository
-        uses: actions/checkout@v4
-
-      - name: Ensure label 'daily-task' exists
-        run: |
-          if ! gh label list --json name --jq '.[] | select(.name == "daily-task")' | grep -q .; then
-            gh label create daily-task --description "Ежедневные задачи" --color 0075ca
-          fi
-        env:
-          GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
-
       - name: Create daily issues
         run: |
-          TODAY=$(date +'%Y-%m-%d')
+          # Явно задаём часовой пояс и вычисляем завтрашнюю дату
+          TOMORROW=$(TZ="Asia/Vladivostok" date -d "tomorrow" +'%Y-%m-%d')
           
-          # Работа (9:00-13:00)
-          gh issue create \
-            --title "Работа ($TODAY)" \
-            --label daily-task \
-            --body "### 📋 Задачи на сегодня
-          - [ ] Задача 1
-          - [ ] Задача 2
-          - [ ] Задача 3
+          # Дополнительная отладка – выводим в лог, какая дата получена
+          echo "Создаю задачи на: $TOMORROW"
+          echo "Текущее время в UTC: $(date -u)"
+          echo "Текущее время во Владивостоке: $(TZ=Asia/Vladivostok date)"
 
-          ---
-          **⏰ Время:** 9:00 - 13:00
-          
-          **📌 Отметка начала:** ⬜ Не приступил
-          - [ ] Приступил в 9:00
-          
-          **📌 Отметка окончания:** ⬜ Не завершил
-          - [ ] Завершил в 13:00"
-          
-          # Планирование (14:45-15:00)
           gh issue create \
-            --title "Планирование ($TODAY)" \
-            --label daily-task \
-            --body "### 🎯 План на день
-          - [ ] Что сделано за первую половину дня?
-          - [ ] Какие планы на вторую половину?
-          - [ ] Есть ли блокеры?
+            --title "Работа $TOMORROW" \
+            --label "daily-task" \
+            --body "### 9:00 - 13:00
+          - [ ] Роман:
+          - [ ] Дмитрий:
+          - [ ] "
 
-          ---
-          **⏰ Время:** 14:45 - 15:00
-          
-          **📌 Отметка начала:** ⬜ Не приступил
-          - [ ] Приступил в 14:45
-          
-          **📌 Отметка окончания:** ⬜ Не завершил
-          - [ ] Завершил в 15:00"
-          
-          # Учёба (15:00-16:30)
           gh issue create \
-            --title "Учёба ($TODAY)" \
-            --label daily-task \
-            --body "### 📚 Что учим?
-          - [ ] Тема 1
-          - [ ] Тема 2
-          - [ ] Тема 3
+            --title "Планирование $TOMORROW" \
+            --label "daily-task" \
+            --body "### 14:45 - 15:00"
 
-          ---
-          **⏰ Время:** 15:00 - 16:30
-          
-          **📌 Отметка начала:** ⬜ Не приступил
-          - [ ] Приступил в 15:00
-          
-          **📌 Отметка окончания:** ⬜ Не завершил
-          - [ ] Завершил в 16:30"
-          
-          # Игры (16:30-18:00)
           gh issue create \
-            --title "Игры ($TODAY)" \
-            --label daily-task \
-            --body "### 🎮 Во что играем?
-          - [ ] Игра 1
-          - [ ] Игра 2
+            --title "Учёба $TOMORROW" \
+            --label "daily-task" \
+            --body "### 15:00 - 16:30
+          - [ ] Роман:
+          - [ ] Дмитрий"
 
-          ---
-          **⏰ Время:** 16:30 - 18:00
-          
-          **📌 Отметка начала:** ⬜ Не приступил
-          - [ ] Приступил в 16:30
-          
-          **📌 Отметка окончания:** ⬜ Не завершил
-          - [ ] Завершил в 18:00"
+          gh issue create \
+            --title "Игры $TOMORROW" \
+            --label "daily-task" \
+            --body "### 16:30 - 18:00
+          - [ ] "
         env:
           GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
