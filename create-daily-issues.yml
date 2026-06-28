@@ -2,7 +2,6 @@ name: Create Daily Routine Issues
 
 on:
   schedule:
-    # Запуск в 13:00 по Владивостоку (UTC+10) = 3:00 UTC
     - cron: '0 3 * * *'
   workflow_dispatch:
 
@@ -14,12 +13,13 @@ jobs:
     steps:
       - name: Create daily issues
         run: |
-          export TZ="Asia/Vladivostok"
+          # Явно задаём часовой пояс и вычисляем завтрашнюю дату
+          TOMORROW=$(TZ="Asia/Vladivostok" date -d "tomorrow" +'%Y-%m-%d')
           
-          # Получаем дату следующего дня (завтра) во владивостокском времени
-          TOMORROW=$(date -d "tomorrow" +'%Y-%m-%d')
-          
+          # Дополнительная отладка – выводим в лог, какая дата получена
           echo "Создаю задачи на: $TOMORROW"
+          echo "Текущее время в UTC: $(date -u)"
+          echo "Текущее время во Владивостоке: $(TZ=Asia/Vladivostok date)"
 
           gh issue create \
             --title "Работа $TOMORROW" \
