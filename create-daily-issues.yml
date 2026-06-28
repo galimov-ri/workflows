@@ -4,7 +4,6 @@ on:
   schedule:
     # Запуск в 13:00 по Владивостоку (UTC+10) = 3:00 UTC
     - cron: '0 3 * * *'
-  # Для ручного запуска (на случай, если нужно протестировать)
   workflow_dispatch:
 
 jobs:
@@ -15,15 +14,13 @@ jobs:
     steps:
       - name: Create daily issues
         run: |
-          # Явно указываем часовой пояс Владивосток (UTC+10)
           export TZ="Asia/Vladivostok"
           
           # Получаем дату следующего дня (завтра) во владивостокском времени
-          TOMORROW=$(date -d "@$(($(date +%s) + 86400))" +'%Y-%m-%d')
+          TOMORROW=$(date -d "tomorrow" +'%Y-%m-%d')
           
           echo "Создаю задачи на: $TOMORROW"
 
-          # Создаём задачу "Работа"
           gh issue create \
             --title "Работа $TOMORROW" \
             --label "daily-task" \
@@ -32,13 +29,11 @@ jobs:
           - [ ] Дмитрий:
           - [ ] "
 
-          # Создаём задачу "Планирование"
           gh issue create \
             --title "Планирование $TOMORROW" \
             --label "daily-task" \
             --body "### 14:45 - 15:00"
 
-          # Создаём задачу "Учёба"
           gh issue create \
             --title "Учёба $TOMORROW" \
             --label "daily-task" \
@@ -46,7 +41,6 @@ jobs:
           - [ ] Роман:
           - [ ] Дмитрий"
 
-          # Создаём задачу "Игры"
           gh issue create \
             --title "Игры $TOMORROW" \
             --label "daily-task" \
